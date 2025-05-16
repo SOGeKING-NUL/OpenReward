@@ -6,6 +6,7 @@ import { formatEther } from "viem";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   Briefcase,
   User,
@@ -560,8 +561,8 @@ function UserDashboard({
             </p>
             <p className="flex justify-between py-1">
               <span className="text-muted-foreground">Wallet:</span>
-              <span className="text-sm font-mono">
-                {address?.slice(0, 6)}...{address?.slice(-4)}
+              <span className="text-sm font-mono text-primary">
+                {address}
               </span>
             </p>
             <p className="flex justify-between py-1">
@@ -733,7 +734,7 @@ function UserDashboard({
                 You haven't created any bounties yet.
               </p>
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                Create New Bounty
+                <Link href="/submit-bounty">Create New Bounty</Link>
               </Button>
             </div>
           </div>
