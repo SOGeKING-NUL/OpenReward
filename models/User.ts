@@ -1,0 +1,154 @@
+import mongoose, { Schema } from 'mongoose';
+
+const userSchema = new Schema({
+    walletAddress: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    }, 
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    }, 
+    name: {
+        type: String,
+        required: true
+    }, 
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    }, 
+    profilePicture: {
+        type: String,
+        default: null
+    }, 
+    bio: {
+        type: String,
+        default: null
+    }, 
+
+    githubUsername: {
+        type: String,
+        index: true,
+        sparse: true
+    }, 
+    githubId: {
+        type: String,
+        index: true,
+        sparse: true
+    }, 
+    githubConnected: {
+        type: Boolean,
+        default: false
+    },
+    githubAccessToken: {
+        type: String,
+        select: false
+    }, 
+    githubRefreshToken: {
+        type: String,
+        select: false
+    }, 
+    githubTokenIV: {
+        type: String,
+        select: false
+    }, 
+    githubTokenExpiry: {
+        type: Date
+    }, 
+    joinedDate: {
+        type: Date,
+        default: Date.now
+    }, 
+}, {
+    timestamps: true, 
+    discriminatorKey: 'userType', 
+});
+
+// Base-model
+const User = mongoose.model("User", userSchema);
+
+const BountyHunter = User.discriminator("BountyHunter", new Schema({
+    skills: {
+        type: [String],
+        default: []
+    }, 
+    bountiesParticipatedIn: {
+        type: [String],
+        default: []
+    }, 
+    bountiesWon: {
+        type: [String],
+        default: []
+    }, 
+    totalAmountWon: {
+        type: Number,
+        default: 0
+    }, 
+    activeBountySubmissions: {
+        type: [String],
+        default: []
+    }, 
+}));
+
+const BountyProvider = User.discriminator("BountyProvider", new Schema({
+    organizationName: {
+        type: String,
+        default: null
+    }, 
+    organizationId: {
+        type: String,
+        default: null
+    },
+    organizationVerified: {
+        type: Boolean,
+        default: false
+    }, 
+    verificationDate: {
+        type: Date,
+        default: null
+    }, 
+    organizationWebsite: {
+        type: String,
+        default: null
+    }, 
+    userRoleInOrganization: {
+        type: String,
+        default: null
+    }, 
+    repositories: {
+        type: [{
+            name: String,        
+            fullName: String,     
+            description: String,  
+            url: String,          
+            isPrivate: Boolean,   
+            stars: Number,        
+            lastVerified: Date    
+        }],
+        default: []
+    }, 
+    bountiesListed: {
+        type: [String],
+        default: []
+    }, 
+    totalAmountDistributed: {
+        type: Number,
+        default: 0
+    }, 
+    activeBounties: {
+        type: [String],
+        default: []
+    }, 
+    completedBounties: {
+        type: [String],
+        default: []
+    }, 
+}));
+
+module.exports = { User, BountyHunter, BountyProvider };
