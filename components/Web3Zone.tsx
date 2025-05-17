@@ -1,5 +1,5 @@
-
 "use client";
+
 import { CivicAuthIframeContainer, useUser } from "@civic/auth-web3/react";
 import { useAutoConnect } from "@civic/auth-web3/wagmi";
 import { useAccount, useBalance, useSendTransaction, useSwitchChain } from "wagmi";
