@@ -23,7 +23,6 @@ export function Hero() {
                   Get Started <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button variant="outline">Learn More</Button>
             </div>
           </div>
           <div className="flex items-center justify-center">

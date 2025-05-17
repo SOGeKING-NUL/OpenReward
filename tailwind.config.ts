@@ -55,7 +55,7 @@ const config = {
         },
       },
       backgroundImage: {
-        "gradient-green": "linear-gradient(90deg, #10b981 0%, #059669 100%)",
+        "gradient-green": "linear-gradient(90deg, #17fc76 0%, #06a175 100%)",
       },
       borderRadius: {
         lg: "var(--radius)",

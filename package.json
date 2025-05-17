@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@civic/auth": "^0.5.5",
+    "@civic/auth-web3": "^0.5.9",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
@@ -57,6 +59,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
+    "wagmi": "^2.15.3",
     "zod": "^3.24.1"
   },
   "devDependencies": {
