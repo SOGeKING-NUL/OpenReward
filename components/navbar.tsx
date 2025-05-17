@@ -59,7 +59,7 @@ export function Navbar() {
               </Link>
             </>
           ) : (
-            <Link href="/signup">           
+            <Link href="/signup">            
               <Button 
                 className="bg-gradient-green hover:opacity-90 transition-opacity"
               >
