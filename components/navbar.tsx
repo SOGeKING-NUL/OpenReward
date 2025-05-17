@@ -51,7 +51,7 @@ export function Navbar() {
           ) : user ? (
             <>
               <AuthHeader />
-              <Link href="/signup">
+              <Link href="/dashboard">
                 <Button variant="ghost" size="icon" className="ml-2" title="Dashboard">
                   <LayoutDashboard className="h-5 w-5" />
                   <span className="sr-only">Dashboard</span>
@@ -59,13 +59,12 @@ export function Navbar() {
               </Link>
             </>
           ) : (
-            <Link href="/signup">            
               <Button 
                 className="bg-gradient-green hover:opacity-90 transition-opacity"
+                onClick={handleGetStarted}
               >
                 Get Started
               </Button>
-              </Link>
           )}
         </div>
       </div>
