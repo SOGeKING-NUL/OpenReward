@@ -19,7 +19,7 @@ export function Hero() {
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
               <Button asChild className="bg-gradient-green hover:opacity-90 transition-opacity">
-                <Link href="#features">
+                <Link href="/signup">
                   Get Started <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

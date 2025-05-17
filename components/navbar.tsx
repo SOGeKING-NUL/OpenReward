@@ -9,9 +9,17 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Input } from "@/components/ui/input"
 import { AuthHeader } from "./AuthHeader"
+import { useUser } from "@civic/auth-web3/react"
+import { useRouter } from "next/navigation"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false)
+  const { user, isLoading, walletCreationInProgress } = useUser()
+  const router = useRouter()
+
+  const handleGetStarted = () => {
+    router.push("/signup")
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -23,9 +31,8 @@ export function Navbar() {
           </Link>
         </div>
         
-
         {/* Search bar - visible on all screen sizes */}
-        <div className="flex-1 mx-4 justify-center  md:flex">
+        <div className="flex-1 mx-4 justify-center md:flex">
           <div className="relative">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input 
@@ -37,53 +44,29 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex md:items-center md:space-x-4">
+          <ThemeToggle />
           
-          <ThemeToggle />
-          <Link href="/dashboard">
-            <Button variant="ghost" size="icon" className="ml-2" title="Dashboard">
-              <LayoutDashboard className="h-5 w-5" />
-              <span className="sr-only">Dashboard</span>
-            </Button>
-          </Link>
-          <Button className="bg-gradient-green hover:opacity-90 transition-opacity">Get Started</Button>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="flex items-center justify-end md:hidden">
-          <ThemeToggle />
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="ml-2">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <nav className="flex flex-col space-y-4 pt-4">
-                <Link
-                  href="/explore"
-                  className="text-sm font-medium transition-colors hover:text-primary"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Explore
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </Link>
-                <Button 
-                  className="mt-4 bg-gradient-green hover:opacity-90 transition-opacity"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Get Started
+          {isLoading ? (
+            <div className="text-sm">Loading account...</div>
+          ) : user ? (
+            <>
+              <AuthHeader />
+              <Link href="/signup">
+                <Button variant="ghost" size="icon" className="ml-2" title="Dashboard">
+                  <LayoutDashboard className="h-5 w-5" />
+                  <span className="sr-only">Dashboard</span>
                 </Button>
-              </nav>
-            </SheetContent>
-          </Sheet>
+              </Link>
+            </>
+          ) : (
+            <Link href="/signup">           
+              <Button 
+                className="bg-gradient-green hover:opacity-90 transition-opacity"
+              >
+                Get Started
+              </Button>
+              </Link>
+          )}
         </div>
       </div>
     </header>

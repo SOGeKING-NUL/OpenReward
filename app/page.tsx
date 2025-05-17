@@ -10,7 +10,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <AuthHeader/>
-      <Web3Zone/>
+      {/* <Web3Zone/> */}
       
       <Footer />
     </main>

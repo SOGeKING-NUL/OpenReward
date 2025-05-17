@@ -5,7 +5,7 @@ import { useAutoConnect } from "@civic/auth-web3/wagmi";
 import { useAccount, useBalance, useSendTransaction, useSwitchChain } from "wagmi";
 import { formatEther } from "viem";
 import { useCallback, useEffect, useState } from "react";
-import { baseSepolia } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 
 
 function Web3U({
