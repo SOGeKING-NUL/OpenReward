@@ -9,8 +9,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const searchParams = request.nextUrl.searchParams;
     const walletAddress = searchParams.get('walletAddress');
     const email = searchParams.get('email');
+    const username = searchParams.get('username');
     
-    if (!walletAddress && !email) {
+    if (!walletAddress && !email && !username) {
       return NextResponse.json(
         { success: false, message: 'At least one search parameter is required' },
         { status: 400 }
@@ -23,7 +24,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       user = await User.findOne({ walletAddress }).select('userType');
     } else if (email) {
       user = await User.findOne({ email }).select('userType');
-    }
+    } else if (username) {
+      user = await User.findOne({ username }).select('userType');
+    };
+
 
     if (user) {
       return NextResponse.json({
