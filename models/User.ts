@@ -121,12 +121,7 @@ const BountyProviderSchema =new Schema({
     repositories: {
         type: [{
             name: String,        
-            fullName: String,     
-            description: String,  
             url: String,          
-            isPrivate: Boolean,   
-            stars: Number,        
-            lastVerified: Date    
         }],
         default: []
     }, 
