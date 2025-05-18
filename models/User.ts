@@ -68,9 +68,9 @@ const userSchema = new Schema({
 });
 
 // Base-model
-const User = mongoose.model("User", userSchema);
+export const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-const BountyHunter = User.discriminator("BountyHunter", new Schema({
+const BountyHunterSchema= new Schema({
     skills: {
         type: [String],
         default: []
@@ -91,9 +91,9 @@ const BountyHunter = User.discriminator("BountyHunter", new Schema({
         type: [String],
         default: []
     }, 
-}));
+});
 
-const BountyProvider = User.discriminator("BountyProvider", new Schema({
+const BountyProviderSchema =new Schema({
     organizationName: {
         type: String,
         default: null
@@ -138,6 +138,7 @@ const BountyProvider = User.discriminator("BountyProvider", new Schema({
         type: Number,
         default: 0
     }, 
-}));
+});
 
-module.exports = { User, BountyHunter, BountyProvider };
+export const BountyHunter = mongoose.models.BountyHunter || User.discriminator('BountyHunter', BountyHunterSchema);
+export const BountyProvider = mongoose.models.BountyProvider || User.discriminator('BountyProvider', BountyProviderSchema);
