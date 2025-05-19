@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { User } from "@/models/User";
-import connectDB from '@/lib/mongodb';
+import dbConnect from '@/lib/mongodb';
+
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    await connectDB();
+    await dbConnect();
     
     const searchParams = request.nextUrl.searchParams;
     const walletAddress = searchParams.get('walletAddress');
