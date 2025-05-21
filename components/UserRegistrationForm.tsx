@@ -210,9 +210,7 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
                     readOnly={!!user?.name}
                     className={user?.name ? "bg-gray-100 dark:bg-gray-800" : ""}
                   />
-                  {user?.name && (
-                    <p className="text-xs text-gray-500 mt-1">Name imported from Civic Auth</p>
-                  )}
+                  {user?.name}
                 </div>
                 <div>
                   <Label htmlFor="username">Username</Label>
