@@ -21,6 +21,8 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [isConnectingGithub, setIsConnectingGithub] = useState(false);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   
   const [formData, setFormData] = useState({
     walletAddress,
@@ -36,6 +38,7 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
     skills: [] as string[],
     // Provider specific
     organizationName: "",
+    organizationGithubUrl: "",
     organizationWebsite: "",
     userRoleInOrganization: "",
     repositories: [{ name: "", url: "" }]
@@ -55,11 +58,42 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Reset username availability check when username changes
+    if (name === "username") {
+      setUsernameAvailable(null);
+    }
   };
 
   const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const skills = e.target.value.split(',').map(skill => skill.trim()).filter(Boolean);
     setFormData(prev => ({ ...prev, skills }));
+  };
+
+  // Extract organization name from GitHub URL
+  const extractOrgName = (url: string): string => {
+    try {
+      // Handle GitHub URLs like https://github.com/organization
+      if (url.includes('github.com')) {
+        const urlParts = url.split('/');
+        // Get the organization name (assuming it's the part after github.com)
+        if (urlParts.length >= 4) {
+          return urlParts[3];
+        }
+      }
+      return "";
+    } catch (error) {
+      return "";
+    }
+  };
+
+  const handleOrgUrlChange = (value: string) => {
+    const orgName = extractOrgName(value);
+    setFormData(prev => ({
+      ...prev,
+      organizationGithubUrl: value,
+      organizationName: orgName
+    }));
   };
 
   // Extract repo name from URL
@@ -121,22 +155,55 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
     }
   };
 
+  const checkUsernameAvailability = async () => {
+    if (!formData.username) return;
+    
+    setIsCheckingUsername(true);
+    try {
+      const response = await fetch(`/api/checkUser?username=${formData.username}`);
+      const data = await response.json();
+      
+      setUsernameAvailable(!data.exists);
+    } catch (error) {
+      console.error("Error checking username:", error);
+      setError("Failed to check username availability");
+    } finally {
+      setIsCheckingUsername(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
 
     try {
+      // Check username availability
+      const usernameResponse = await fetch(`/api/checkUser?username=${formData.username}`);
+      const usernameData = await usernameResponse.json();
+      
+      if (usernameData.exists) {
+        throw new Error("Username is already taken. Please choose another one.");
+      }
+
       // Validate GitHub connection
       if (!formData.githubConnected) {
         throw new Error("Please connect your GitHub account");
       }
 
       // Validate form based on user type
-      if (userType === "BountyProvider" && 
-          (!formData.repositories.length || 
-           formData.repositories.some(repo => !repo.url))) {
-        throw new Error("Please provide at least one repository URL");
+      if (userType === "BountyProvider") {
+        if (!formData.organizationGithubUrl) {
+          throw new Error("Please provide your organization's GitHub URL");
+        }
+        
+        if (!formData.organizationName) {
+          throw new Error("Could not extract organization name from URL");
+        }
+        
+        if (!formData.repositories.length || formData.repositories.some(repo => !repo.url)) {
+          throw new Error("Please provide at least one repository URL");
+        }
       }
 
       // Clean up repository data to ensure names are extracted from URLs
@@ -197,7 +264,6 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
                     readOnly={!!user?.email}
                     className={user?.email ? "bg-gray-100 dark:bg-gray-800" : ""}
                   />
-                  {user?.email}
                 </div>
                 <div>
                   <Label htmlFor="name">Full Name</Label>
@@ -206,21 +272,41 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    required
-                    readOnly={!!user?.name}
                     className={user?.name ? "bg-gray-100 dark:bg-gray-800" : ""}
                   />
-                  {user?.name}
                 </div>
                 <div>
                   <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="username"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      required
+                      className={
+                        usernameAvailable === true
+                          ? "border-green-500"
+                          : usernameAvailable === false
+                          ? "border-red-500"
+                          : ""
+                      }
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={checkUsernameAvailability}
+                      disabled={isCheckingUsername || !formData.username}
+                    >
+                      {isCheckingUsername ? "Checking..." : "Check"}
+                    </Button>
+                  </div>
+                  {usernameAvailable === true && (
+                    <p className="text-xs text-green-500 mt-1">Username is available</p>
+                  )}
+                  {usernameAvailable === false && (
+                    <p className="text-xs text-red-500 mt-1">Username is already taken</p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="bio">Bio</Label>
@@ -276,14 +362,20 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
 
               <TabsContent value="BountyProvider" className="space-y-4">
                 <div>
-                  <Label htmlFor="organizationName">Organization Name</Label>
+                  <Label htmlFor="organizationGithubUrl">Organization GitHub URL</Label>
                   <Input
-                    id="organizationName"
-                    name="organizationName"
-                    value={formData.organizationName}
-                    onChange={handleChange}
+                    id="organizationGithubUrl"
+                    name="organizationGithubUrl"
+                    value={formData.organizationGithubUrl}
+                    onChange={(e) => handleOrgUrlChange(e.target.value)}
+                    placeholder="https://github.com/your-organization"
                     required={userType === "BountyProvider"}
                   />
+                  {formData.organizationName && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Organization name: <span className="font-medium">{formData.organizationName}</span>
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="organizationWebsite">Organization Website</Label>
@@ -357,7 +449,7 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
                 <Button 
                   type="submit" 
                   className="w-full" 
-                  disabled={isSubmitting || !formData.githubConnected}
+                  disabled={isSubmitting || !formData.githubConnected || usernameAvailable === false}
                 >
                   {isSubmitting ? "Creating Account..." : "Complete Registration"}
                 </Button>
