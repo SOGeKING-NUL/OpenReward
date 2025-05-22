@@ -29,15 +29,12 @@ const SignupPage = () => {
         const data = await response.json();
         
         if (data.success && data.exists) {
-          // User exists in database, redirect to dashboard
           router.push('/dashboard');
         } else {
-          // User authenticated with Civic but not in our database
           setNeedsRegistration(true);
         }
       } catch (error) {
         console.error("Error checking user in database:", error);
-        // If there's an error, we'll assume user needs to register
         setNeedsRegistration(true);
       } finally {
         setIsCheckingDb(false);
@@ -49,7 +46,6 @@ const SignupPage = () => {
     }
   }, [isLoading, user, isConnected, address, router]);
 
-  // Loading states
   if (isLoading || isCheckingDb) {
     return (
       <div>
@@ -65,7 +61,6 @@ const SignupPage = () => {
     );
   }
 
-  // User needs to authenticate with Civic
   if (!user || !isConnected) {
     return (
       <div>
@@ -81,7 +76,6 @@ const SignupPage = () => {
     );
   }
 
-  // User authenticated with Civic but needs to complete registration
   if (needsRegistration) {
     return (
       <div>
@@ -98,7 +92,6 @@ const SignupPage = () => {
     );
   }
   
-  // Fallback - should not reach here normally
   return (
     <div>
       <Navbar />

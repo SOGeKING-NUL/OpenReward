@@ -30,13 +30,10 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
     name: user?.name || "",
     username: "",
     bio: "",
-    // GitHub info
     githubUsername: "",
     githubId: "",
     githubConnected: false,
-    // Hunter specific
     skills: [] as string[],
-    // Provider specific
     organizationName: "",
     organizationGithubUrl: "",
     organizationWebsite: "",
@@ -44,7 +41,6 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
     repositories: [{ name: "", url: "" }]
   });
 
-  // Update form data when Civic user data changes
   useEffect(() => {
     if (user) {
       setFormData(prev => ({
@@ -59,7 +55,6 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Reset username availability check when username changes
     if (name === "username") {
       setUsernameAvailable(null);
     }
@@ -70,13 +65,10 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
     setFormData(prev => ({ ...prev, skills }));
   };
 
-  // Extract organization name from GitHub URL
   const extractOrgName = (url: string): string => {
     try {
-      // Handle GitHub URLs like https://github.com/organization
       if (url.includes('github.com')) {
         const urlParts = url.split('/');
-        // Get the organization name (assuming it's the part after github.com)
         if (urlParts.length >= 4) {
           return urlParts[3];
         }
@@ -96,13 +88,10 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
     }));
   };
 
-  // Extract repo name from URL
   const extractRepoName = (url: string): string => {
     try {
-      // Handle GitHub URLs like https://github.com/username/repo
       if (url.includes('github.com')) {
         const urlParts = url.split('/');
-        // Get the last part of the URL (the repo name)
         return urlParts[urlParts.length - 1].replace('.git', '');
       }
       return "";
@@ -135,9 +124,7 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
   const connectGithub = async () => {
     setIsConnectingGithub(true);
     try {
-      // In a real implementation, you would redirect to GitHub OAuth flow
-      // For this example, we'll simulate a successful connection
-      const githubData = {
+        const githubData = {
         username: "example-user",
         id: "12345678"
       };
@@ -178,7 +165,6 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
     setError("");
 
     try {
-      // Check username availability
       const usernameResponse = await fetch(`/api/checkUser?username=${formData.username}`);
       const usernameData = await usernameResponse.json();
       
@@ -186,12 +172,10 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
         throw new Error("Username is already taken. Please choose another one.");
       }
 
-      // Validate GitHub connection
       if (!formData.githubConnected) {
         throw new Error("Please connect your GitHub account");
       }
 
-      // Validate form based on user type
       if (userType === "BountyProvider") {
         if (!formData.organizationGithubUrl) {
           throw new Error("Please provide your organization's GitHub URL");
@@ -206,7 +190,6 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
         }
       }
 
-      // Clean up repository data to ensure names are extracted from URLs
       const cleanedRepositories = formData.repositories.map(repo => ({
         name: repo.name || extractRepoName(repo.url),
         url: repo.url
@@ -230,7 +213,6 @@ const UserRegistrationForm = ({ walletAddress, onRegistrationComplete }: UserReg
         throw new Error(data.message || "Failed to register user");
       }
 
-      // Registration successful
       onRegistrationComplete();
     } catch (error) {
       setError(error instanceof Error ? error.message : "An unknown error occurred");
