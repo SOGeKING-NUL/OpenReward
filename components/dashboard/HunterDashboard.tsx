@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Award, DollarSign, FileText, Briefcase } from "lucide-react";
+import { Award, DollarSign, FileText, Briefcase, Heart } from "lucide-react";
 
 interface UserData {
   skills?: string[];
@@ -11,6 +11,7 @@ interface UserData {
   totalAmountWon?: number;
   activeBountySubmissions?: string[];
   bountiesParticipatedIn?: string[];
+  bountiesInterestedIn?: string[];
 }
 
 interface HunterDashboardProps {
@@ -21,7 +22,7 @@ export default function HunterDashboard({ userData }: HunterDashboardProps) {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Hunter Dashboard</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Bounties Won</CardTitle>
@@ -50,6 +51,16 @@ export default function HunterDashboard({ userData }: HunterDashboardProps) {
           <CardContent>
             <div className="text-2xl font-bold">{userData.activeBountySubmissions?.length || 0}</div>
             <p className="text-xs text-muted-foreground">Bounties you are currently working on</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Bounties Interested In</CardTitle>
+            <Heart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{userData.bountiesInterestedIn?.length || 0}</div>
+            <p className="text-xs text-muted-foreground">Bounties you've bookmarked</p>
           </CardContent>
         </Card>
       </div>
@@ -81,6 +92,10 @@ export default function HunterDashboard({ userData }: HunterDashboardProps) {
             <div className="flex justify-between">
                 <span className="text-muted-foreground">Bounties Participated In:</span>
                 <span className="font-semibold">{userData.bountiesParticipatedIn?.length || 0}</span>
+            </div>
+            <div className="flex justify-between">
+                <span className="text-muted-foreground">Bounties Interested In:</span>
+                <span className="font-semibold">{userData.bountiesInterestedIn?.length || 0}</span>
             </div>
              <div className="flex justify-between">
                 <span className="text-muted-foreground">Success Rate:</span>

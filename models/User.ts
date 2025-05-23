@@ -90,6 +90,10 @@ const BountyHunterSchema= new Schema({
     activeBountySubmissions: {
         type: [String],
         default: []
+    },
+    bountiesInterestedIn: {
+        type: [String],
+        default: []
     }, 
 });
 
