@@ -160,6 +160,14 @@ export default function DashboardPage() {
     );
   }
 
+  const handleActionClick= () =>{
+    if (userData.userType === 'BountyHunter') {
+      router.push('/explore');
+    } else {
+      router.push('/create-bounty');
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -229,7 +237,7 @@ export default function DashboardPage() {
         )}
 
         <div className="mt-8 flex gap-4">
-          <Button size="lg">
+          <Button size="lg" onClick={handleActionClick}>
             {userData.userType === 'BountyHunter' ? 'Find Bounties' : 'Create New Bounty'}
           </Button>
           <Button variant="outline" size="lg">
