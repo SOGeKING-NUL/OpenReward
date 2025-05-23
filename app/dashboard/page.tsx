@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 "use client"
 
 import { useEffect, useState } from "react";
@@ -14,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Copy, Calendar, Github } from "lucide-react";
 
-// Define UserData interface based on your User model
 interface UserData {
   walletAddress: string;
   email: string;
@@ -26,12 +24,11 @@ interface UserData {
   githubConnected: boolean;
   joinedDate: string;
   userType: "BountyHunter" | "BountyProvider";
-  // BountyHunter specific
+
   skills?: string[];
   bountiesWon?: string[];
   totalAmountWon?: number;
   activeBountySubmissions?: string[];
-  // BountyProvider specific
   organizationName?: string;
   organizationWebsite?: string;
   userRoleInOrganization?: string;
@@ -91,7 +88,7 @@ export default function DashboardPage() {
 
         if (!response.ok) {
           if (response.status === 404) {
-            // User not found in our DB, redirect to complete registration
+
             router.push('/signup');
             return;
           }
@@ -150,7 +147,6 @@ export default function DashboardPage() {
   }
 
   if (!userData) {
-    // This state might be reached if API fails silently or redirects happen too fast
     return (
       <div>
         <Navbar />
@@ -168,7 +164,7 @@ export default function DashboardPage() {
     <div>
       <Navbar />
       <div className="container mx-auto py-8 px-4">
-        {/* User Profile Header Card */}
+
         <Card className="mb-8">
           <CardHeader>
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -225,7 +221,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Conditional Rendering of Specific Dashboards */}
+
         {userData.userType === 'BountyHunter' ? (
           <HunterDashboard userData={userData} />
         ) : (

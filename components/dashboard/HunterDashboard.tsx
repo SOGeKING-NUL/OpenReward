@@ -1,4 +1,3 @@
-// app/dashboard/HunterDashboard.tsx
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,14 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Award, DollarSign, FileText, Briefcase } from "lucide-react";
 
-// Ensure UserData here matches or is compatible with the one in DashboardPage
 interface UserData {
   skills?: string[];
   bountiesWon?: string[];
   totalAmountWon?: number;
   activeBountySubmissions?: string[];
   bountiesParticipatedIn?: string[];
-  // other fields if needed by this component
 }
 
 interface HunterDashboardProps {

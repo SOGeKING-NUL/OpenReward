@@ -1,4 +1,3 @@
-// app/dashboard/ProviderDashboard.tsx
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Github, Globe, FileText, DollarSign, Users } from "lucide-react";
 
-// Ensure UserData here matches or is compatible with the one in DashboardPage
 interface Repository {
   name: string;
   url: string;
@@ -18,7 +16,6 @@ interface UserData {
   repositories?: Repository[];
   bountiesListed?: number;
   totalAmountDistributed?: number;
-  // other fields if needed by this component
 }
 
 interface ProviderDashboardProps {
