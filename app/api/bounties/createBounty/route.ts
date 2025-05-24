@@ -20,7 +20,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const data: CreateBountyRequest = await request.json();
 
-    // Validate required fields
     const { 
       contractAddress, 
       bountyProvider, 
@@ -40,7 +39,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Validate bounty amount is positive
     if (bountyAmount <= 0) {
       return NextResponse.json(
         { success: false, message: 'Bounty amount must be greater than 0' },
@@ -48,7 +46,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Validate time interval is positive
     if (timeInterval <= 0) {
       return NextResponse.json(
         { success: false, message: 'Time interval must be greater than 0' },
@@ -56,7 +53,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Validate expiry date is in the future
     const expiryDate = new Date(expiresAt);
     if (expiryDate <= new Date()) {
       return NextResponse.json(
@@ -65,7 +61,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Validate URL format
     try {
       new URL(issueURL);
     } catch (error) {
@@ -83,7 +78,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Create new bounty
     const newBounty = new Bounty({
       contractAddress,
       bountyProvider,
@@ -111,7 +105,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (error) {
     console.error('Error creating bounty:', error);
     
-    // Handle duplicate key error
     if ((error as any).code === 11000) {
       return NextResponse.json(
         { success: false, message: 'Bounty with this contract address already exists' },
