@@ -35,7 +35,6 @@ export async function GET(
       return NextResponse.json(formattedAddress);
     }
 
-    // Return null for invalid data
     return NextResponse.json(null);
 
   } catch (error) {
