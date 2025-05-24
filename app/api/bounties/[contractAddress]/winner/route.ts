@@ -1,15 +1,17 @@
+// app/api/bounties/[contractAddress]/winner/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import Bounty from '@/models/Bounty';
 import dbConnect from '@/lib/mongodb';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { contractAddress: string } }
+  { params }: { params: Promise<{ contractAddress: string }> }
 ): Promise<NextResponse> {
   try {
     await dbConnect();
     
-    const { contractAddress } = params;
+    // Await the params Promise in Next.js 15
+    const { contractAddress } = await params;
 
     if (!contractAddress) {
       return NextResponse.json(null, { status: 400 });
@@ -28,14 +30,16 @@ export async function GET(
       return NextResponse.json(null);
     }
 
+    // Return formatted 20-byte address if winner exists
     if (typeof bountyWinner === 'string') {
-      const formattedAddress = bountyWinner.startsWith('0x') //formatted 20-byte address if winner exists
+      const formattedAddress = bountyWinner.startsWith('0x') 
         ? bountyWinner.toLowerCase() 
         : `0x${bountyWinner.toLowerCase()}`;
       
       return NextResponse.json(formattedAddress);
     }
 
+    // Return null for invalid data
     return NextResponse.json(null);
 
   } catch (error) {
