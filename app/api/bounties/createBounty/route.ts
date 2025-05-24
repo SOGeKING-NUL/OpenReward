@@ -75,7 +75,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Check if bounty with same contract address already exists
     const existingBounty = await Bounty.findOne({ contractAddress });
     if (existingBounty) {
       return NextResponse.json(
