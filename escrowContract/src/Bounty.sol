@@ -1,6 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {LinkTokenInterface} from "../lib/chainlink-brownie-contracts/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
+
+import {AutomationRegistrar2_1} from "../lib/chainlink-brownie-contracts/contracts/src/v0.8/automation/v2_1/AutomationRegistrar2_1.sol";
+
 contract Bounty{
 
     /*
@@ -22,6 +26,7 @@ contract Bounty{
     //errors
     error Bounty__TransferFailed();
     error Bounty__UpkeepNotNeeded();
+    event Bounty__UpkeepRegistrationFailed();
 
     //emits
     event BountyCreated(address indexed provider, uint256 amount);
@@ -30,6 +35,7 @@ contract Bounty{
     event WinnerSelected(address indexed winner, uint256 amount);
     event BountyCompleted();
     event BountyUnderReview();
+    event UpkeepRegistered(uint256 indexed upkeepId);
 
     enum BountyState{
         OPEN,
@@ -39,22 +45,32 @@ contract Bounty{
         CANCELLED
     }
 
+    address private constant LINK_TOKEN= 0x779877A7B0D9E8603169DdbD7836e478b4624789;
+    address private constant REGISTRAR= 0xb0E49c5D0d05cbc241d68c05BC5BA1d1B7B72976;
+
     address immutable private i_bountyProvider;
     address [] private s_bountyHunters;
+    address private s_winnerHunter;
     mapping(address => bool) private s_isBountyHunter; //false by default
     uint256 immutable private i_bountyAmount;
     uint256 immutable private i_timeInterval;
     uint256 immutable private i_reviewTime;
     uint256 private s_initialTimestamp;
     uint256 private s_reviewStartTimestamp;
-    address private s_winnerHunter;
+    uint256 public upkeepId;
 
     BountyState private s_bountyState;
 
-    constructor(uint256 _timeInterval, uint256 _reviewTime) payable{
+    constructor(
+        uint256 _timeInterval, 
+        uint256 _reviewTime,
+        uint96 _linkAmount,
+        string memory _upkeepName
+        ) payable{
         require(msg.value >0, "must send some funds to create Bounty");
         require(_timeInterval > 0, "time interval must be greater than 0");
         require(_reviewTime > 0, "review time must be greater than 0");
+        require(_linkAmount > 0, "LINK amount has to be greater than 0");
 
         i_bountyProvider= msg.sender;
         i_bountyAmount= msg.value;
@@ -63,11 +79,55 @@ contract Bounty{
         i_reviewTime = _reviewTime;
         s_bountyState = BountyState.OPEN;
 
+        _registerUpkeep(_linkAmount, _upkeepName);
+
         emit BountyCreated(i_bountyProvider, i_bountyAmount);
     }
 
+    function _registerUpkeep(uint295 _linkAmount, string memory _upkeepName) private{
+
+        LinkTokenInterface linkToken= LinkTokenInterface(LINK_TOKEN);
+
+        require(linkToken.transferFrom(msg.sender, address(this), _linkAmount), "Link transfer failed");
+        require(linkToken.approve(REGISTRAR, _linkAmount), "LINK approval failed");
+
+        AutomationRegistrar2_1.RegistrationParams memory params= AutomationRegistrar2_1.RegistrationParams({
+            name: _upkeepName,
+            encryptedEmail: hex"",
+            upkeepContract: address(this),
+            gasLimit: 500000,
+            adminAddress: i_bountyProvider,
+            triggerType: 0, //custom logic trigger
+            checkData: hex"",
+            triggerConfig: hex"",
+            offchainConfig: hex"",
+            amount: _linkAmount
+        });
+
+        /*  struct RegistrationParams {
+                string name;
+                bytes encryptedEmail;
+                address upkeepContract;
+                uint32 gasLimit;
+                address adminAddress;
+                uint8 triggerType;
+                bytes checkData;
+                bytes triggerConfig;
+                bytes offchainConfig;
+                uint96 amount;
+            }
+        */
+
+        upkeepId= AutomationRegistrar2_1(REGISTRAR).registerUpkeep(params);   
+        if (upkeepId == 0){
+            revert Bounty__UpkeepRegistrationFailed();
+        }     
+
+        emit UpkeepRegistered(upkeepId);
+    }
+
     modifier onlyBountyProvider{
-        require(msg.sender == i_bountyProvider);
+        require(msg.sender == i_bountyProvider,"Only bounty provider can call this function");
         _;
     }
 
@@ -102,7 +162,6 @@ contract Bounty{
         require(block.timestamp - s_reviewStartTimestamp <= i_reviewTime, "Review period has expired");
         
         s_winnerHunter = _winner;
-        s_bountyState = BountyState.CLOSED;
     }
 
     function checkUpkeep(bytes memory /*CheckData*/) public view returns(bool upkeepNeeded, bytes memory /*performData*/){
@@ -136,22 +195,21 @@ contract Bounty{
         bool bountyExpired = (block.timestamp - s_initialTimestamp) > i_timeInterval;
         bool reviewExpired = false;
         bool hasWinner = (s_winnerHunter != address(0));
-        bool isClosed = (s_bountyState == BountyState.CLOSED);
         bool isUnderReview = (s_bountyState == BountyState.UNDER_REVIEW);
         
         if (isUnderReview && s_reviewStartTimestamp > 0) {
             reviewExpired = (block.timestamp - s_reviewStartTimestamp) > i_reviewTime;
         }
 
-        // Transfer funds to winner if bounty is closed and winner is selected
-        if (isClosed && hasWinner) {
+        if (isUnderReview && hasWinner) {
             (bool success,) = s_winnerHunter.call{value: address(this).balance}("");
+            s_bountyState = BountyState.CLOSED;
             if(!success){
                 revert Bounty__TransferFailed();
             }
             emit WinnerSelected(s_winnerHunter, i_bountyAmount);
         }
-        // Refund to provider if bounty expired or review period expired without winner
+
         else if ((bountyExpired && s_bountyState == BountyState.OPEN) || (reviewExpired && !hasWinner)) {
             (bool success,) = i_bountyProvider.call{value: address(this).balance}("");
             if(!success){
@@ -245,5 +303,9 @@ contract Bounty{
             return 0;
         }
         return (s_reviewStartTimestamp + i_reviewTime) - block.timestamp;
+    }
+    
+    function getUpkeepId() public view returns (uint256) {
+        return upkeepId;
     }
 }
