@@ -6,7 +6,7 @@ const AuthHeader = () => {
 
   return (
     <div className="items-center justify-between px-2 py-4 sm:flex">
-      {(user || isLoading) && <UserButton />}
+      {(user || isLoading) && <UserButton />}     
     </div>
   );
 };

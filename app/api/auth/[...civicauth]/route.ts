@@ -1,3 +1,3 @@
-import { handler } from "@civic/auth-web3/nextjs";
+import { handler } from "@civic/auth-web3/nextjs"
 
-export const GET = handler();
+export const GET = handler()

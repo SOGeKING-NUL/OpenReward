@@ -1,45 +1,30 @@
-import type React from "react";
-import { Inter, Chathura } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
-import { CustomCursor } from "@/components/custom-cursor";
-import { ToastProvider } from "@/components/toast-provider";
-import "./globals.css";
-import { Suspense } from "react";
-import { Providers } from "@/components/Providers";
-import { Analytics } from "@vercel/analytics/next"
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import {Providers} from "@/components/Providers"
 
-const inter = Inter({ subsets: ["latin", "vietnamese"] });
+const inter = Inter({ subsets: ["latin"] })
 
-export const metadata = {
-  title: "OpenReward - Decentralized Bounty Platform",
-  description: "List bounties. Solve challenges. Earn crypto rewards.",
-};
+export const metadata: Metadata = {
+  title: "OpenReward",
+  description: "Revolutionizing open source collaboration through decentralized bounties and rewards",
+    generator: 'v0.dev'
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-        <body className={`font-serif `}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={false}
-          >
-            <CustomCursor />
-            <ToastProvider />
-            <div className="flex min-h-screen">
-              <div className="flex-1 overflow-hidden">
-                <Providers>
-                  <Suspense>{children}</Suspense>
-                </Providers>
-              </div>
-            </div>
-          </ThemeProvider>
-          <Analytics />
-        </body>
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <Providers>{children}</Providers>
+        </ThemeProvider>
+      </body>
     </html>
-  );
+  )
 }

@@ -4,35 +4,48 @@
 
 @layer base {
   :root {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 100%; /* white */
+    --foreground: 0 0% 10%;   /* near-black for stronger contrast */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 20%;  /* more contrast */
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 90%;
+    --accent-foreground: 0 0% 20%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 80%;
+    --input: 0 0% 80%;
+    --ring: 142.1 76.2% 36.3%;
+    --radius: 0.5rem;
+  }
 
-    --card: 0 0% 5.9%;
+  .dark {
+    --background: 0 0% 0%; /* black */
+    --foreground: 0 0% 98%; /* pure white for max vibrancy */
+    --card: 0 0% 0%;
     --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 5.9%;
+    --popover: 0 0% 0%;
     --popover-foreground: 0 0% 98%;
-
-    --primary: 142 72% 29%;
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 142 72% 35%;
-    --secondary-foreground: 0 0% 98%;
-
-    --accent: 142 72% 42%;
-    --accent-foreground: 0 0% 98%;
-
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 90%; /* brighter secondary text */
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 90%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 142 72% 29%;
-
-    --radius: 0.5rem;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 142.1 76.2% 36.3%;
   }
 }
 
@@ -42,77 +55,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    cursor: none;
-  }
-
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-primary/50 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary/80;
   }
 }
 
-@layer components {
-  .acrylic {
-    @apply bg-background/80 backdrop-blur-md border border-border shadow-lg;
-  }
-
-  .acrylic-card {
-    @apply bg-background/80 backdrop-blur-md border border-border rounded-xl shadow-lg;
-  }
-
-  .acrylic-button {
-    @apply bg-primary/90 hover:bg-primary/100 text-white backdrop-blur-sm shadow-lg transition-all duration-300;
-  }
-
-  .acrylic-button-outline {
-    @apply bg-white/5 dark:bg-black/20 backdrop-blur-md border border-white/10 dark:border-white/5 hover:bg-white/10 dark:hover:bg-black/30 text-white shadow-lg transition-all duration-300;
-  }
-
-  .floating {
-    animation: floating 3s ease-in-out infinite;
-  }
-
-  @keyframes floating {
-    0% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-    100% {
-      transform: translateY(0px);
-    }
-  }
-
-  .glow {
-    box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
-  }
-
-  .glow-text {
-    text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
-  }
-
-  .noise {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.05;
-    pointer-events: none;
-    z-index: 1;
-  }
+.gradient-text {
+  @apply bg-gradient-green bg-clip-text text-transparent;
 }
