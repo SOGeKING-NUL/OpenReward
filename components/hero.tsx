@@ -27,8 +27,11 @@ export function Hero() {
           </div>
           <div className="flex items-center justify-center">
             <div className="relative h-[300px] w-full overflow-hidden rounded-lg bg-muted md:h-[400px] lg:h-[500px]">
-              {/* You can add an image here */}
-              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">Hero Image</div>
+              <img
+                src="https://commission.europa.eu/sites/default/files/styles/oe_theme_medium_no_crop/public/2022-01/bugbounty.png?itok=JGogu6-Q"
+                alt="Hero"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
             </div>
           </div>
         </div>
